@@ -24,6 +24,7 @@ import { useLocation } from 'react-router-dom';
 import EmailAuth from './Contact/EmailAuth.js';
 import ValueEng from './Portfolio/valueengg.js'
 import HomeLogin from './Contact/homelogin.js'
+import AdminDashboard from './Admin/AdminDashboard.js';
 
 const router=createBrowserRouter(
   [{
@@ -101,7 +102,8 @@ const router=createBrowserRouter(
         }
         
       ]
-    }
+    },
+    { path: '/admin', element: <AdminDashboard /> }
   ])
   
 

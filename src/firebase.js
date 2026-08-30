@@ -1,6 +1,7 @@
 // Import the functions you need from the SDKs you need
 import { initializeApp } from "firebase/app";
-import {getAuth} from 'firebase/auth';
+import { getAuth } from 'firebase/auth';
+import { getFirestore } from 'firebase/firestore';
 // TODO: Add SDKs for Firebase products that you want to use
 // https://firebase.google.com/docs/web/setup#available-libraries
 
@@ -10,17 +11,18 @@ const firebaseConfig = {
 
   authDomain: `${process.env.REACT_APP_AUTH_DOMAIN}`,
 
-  projectId: "consultant-manish",
+  projectId: `${process.env.REACT_APP_PROJECT_ID}`,
 
-  storageBucket: "consultant-manish.appspot.com",
+  storageBucket: `${process.env.REACT_APP_STORAGE_BUCKET}`,
 
-  messagingSenderId: "427996513361",
+  messagingSenderId: `${process.env.REACT_APP_MESSAGING_SENDER_ID}`,
 
-  appId: "1:427996513361:web:164ff96676d553d53a2470"
+  appId: `${process.env.REACT_APP_APP_ID}`
 
 };
 
 // Initialize Firebase
 const app = initializeApp(firebaseConfig);
 const auth = getAuth(app);
-export {auth}
+const db = getFirestore(app);
+export { auth, db };

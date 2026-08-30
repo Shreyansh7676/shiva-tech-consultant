@@ -5,8 +5,11 @@ import { useState, useEffect } from 'react';
 import AOS from "aos"
 import LogIn from './Login'
 import "aos/dist/aos.css"
+import usePageContent from '../content/usePageContent';
+import RichContent from '../content/RichContent';
 
 export function Contact() {
+  const sections = usePageContent('contact');
   useEffect(() => {
     AOS.init({ duration: 1200 })
   })
@@ -16,8 +19,8 @@ export function Contact() {
     e.preventDefault();
 
     emailjs
-      .sendForm("service_2m12hsp", "template_6zuwjnn", form.current, {
-        publicKey: "UeDMpggyD803eLSSW",
+      .sendForm(`${process.env.REACT_APP_EMAILJS_SERVICE_ID}`, `${process.env.REACT_APP_EMAILJS_TEMPLATE_ID}`, form.current, {
+        publicKey: `${process.env.REACT_APP_EMAILJS_PUBLIC_KEY}`,
       })
       .then(
         () => {
@@ -41,12 +44,7 @@ export function Contact() {
 
             </div>
             <div className="text-center" data-aos="fade-up">
-              <h1 className="text-4xl font-bold tracking-tight text-gray-900 sm:text-6xl">
-                Contact Us!
-              </h1>
-              <p className="mt-6 text-md leading-8 text-gray-600 text-justify">
-                We'd love to hear from you! Whether you have questions, feedback, or need assistance, please reach out. You can type-in your email id and a verification link will be messaged to your email to know our email-id.
-              </p>
+              <RichContent html={sections.introduction.html} className="text-md leading-8 text-gray-600 text-justify" />
               <div className="mt-3">
                 <LogIn />
               </div>
@@ -67,8 +65,7 @@ export function Contact() {
                 {/* contact from */}
                 <div className="flex items-center justify-center">
                   <div className="px-2 md:px-12">
-                    <p className="text-2xl font-bold text-black md:text-4xl">Leave a Message</p>
-                    <p className="text-sm leading-8 text-gray-600 text-justify"> You can simply fill out the details below in form and we will revert back to you soon.</p>
+                    <RichContent html={sections.formIntro.html} className="text-sm leading-8 text-gray-600 text-justify" />
                     <form action="" className="mt-8 space-y-4" ref={form} onSubmit={sendEmail} >
                       <div className="grid w-full gap-y-4 md:gap-x-4 lg:grid-cols-2">
                         <div className="grid w-full items-center gap-1.5">
