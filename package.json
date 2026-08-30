@@ -2,6 +2,9 @@
   "name": "jeenotes",
   "version": "0.1.0",
   "private": true,
+  "engines": {
+    "node": "24.x"
+  },
   "dependencies": {
     "@coreui/coreui": "^5.0.2",
     "@coreui/react": "^5.1.0",
@@ -23,10 +26,10 @@
     "framer-motion": "^11.2.11",
     "lucide-react": "^0.381.0",
     "mdb-react-ui-kit": "^8.0.0",
-    "react": "^19.2.8",
+    "react": "^18.3.1",
     "react-bootstrap": "^2.10.2",
     "react-countup": "^6.5.3",
-    "react-dom": "^19.2.8",
+    "react-dom": "^18.3.1",
     "react-firebase-hooks": "^5.1.1",
     "react-hook-form": "^7.52.1",
     "react-router-dom": "^6.23.1",
