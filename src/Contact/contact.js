@@ -1,6 +1,6 @@
 import React, { useRef } from 'react';
 import emailjs from '@emailjs/browser';
-import { useState, useEffect } from 'react';
+import { useEffect } from 'react';
 
 import AOS from "aos"
 import LogIn from './Login'

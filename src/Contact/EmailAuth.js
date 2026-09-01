@@ -6,11 +6,8 @@ import Contact from './contact';
 import { ArrowRight } from 'lucide-react'
 
 export default function CtaOne() {
-  const [user, loading, error] = useAuthState(auth);
+  const [user, , error] = useAuthState(auth);
   const navigate = useNavigate();
-  const contactPage = () => {
-    navigate("/contact")
-  }
   const handleLogout = () => {
     auth.signOut().then(() => {
       console.log('successfully logged out');

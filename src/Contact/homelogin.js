@@ -23,7 +23,7 @@ export const Home = () => {
       <h3>Welcome {user.displayName}</h3>
       <p>{user.email}</p>
       <div className='photo'>
-        <img src={user.photoURL} alt="User Display Picture" referrerPolicy='no-referrer' />
+        <img src={user.photoURL} alt="User avatar" referrerPolicy='no-referrer' />
       </div>
     </>
   );

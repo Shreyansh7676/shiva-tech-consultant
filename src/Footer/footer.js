@@ -1,37 +1,34 @@
 import React from 'react'
-import { useNavigate, useLocation } from 'react-router-dom';
+import { Link } from 'react-router-dom';
 
 export function FooterThree() {
-  const navigate = useNavigate();
   return (
     <section className="relative overflow-hidden bg-gray-900 py-0.2 z-0">
       <div className="container relative z-10 mx-auto px-4">
         <div className="-m-8 flex flex-wrap items-center justify-between">
           <div className="w-auto p-8">
-            <a href="#">
-            </a>
           </div>
           <div className="w-auto p-8">
             <ul className="-m-5 flex flex-wrap items-center">
               <li className="p-5">
-                <a className="font-medium text-white hover:text-gray-200" href="privacy">
+                <Link className="font-medium text-white hover:text-gray-200" to="/privacy">
                   Privacy Policy
-                </a>
+                </Link>
               </li>
               <li className="p-5">
-                <a className="font-medium text-white hover:text-gray-200" href="services">
+                <Link className="font-medium text-white hover:text-gray-200" to="/services">
                   Terms of Service
-                </a>
+                </Link>
               </li>
               <li className="p-5">
-                <a className="font-medium text-white hover:text-gray-200" href="disclaimer">
+                <Link className="font-medium text-white hover:text-gray-200" to="/disclaimer">
                   Disclaimer
-                </a>
+                </Link>
               </li>
               <li className="p-5">
-                <a className="font-medium text-white hover:text-gray-200" href="contact">
+                <Link className="font-medium text-white hover:text-gray-200" to="/contact">
                   Contact Us
-                </a>
+                </Link>
               </li>
             </ul>
           </div>
@@ -97,10 +94,10 @@ export function FooterThree() {
         </div>
         
       <div className='flex space-x-1 justify-center'>
-        <p class=" text-center text-sm text-gray-300">
+        <p className=" text-center text-sm text-gray-300">
           Developed by
         </p>
-        <a href='https://www.linkedin.com/in/shreyansh-srivastava-945034257/' class="text-center text-sm text-gray-300" target='blank'>Shreyansh Srivastava</a>
+        <a href="https://www.linkedin.com/in/shreyansh-srivastava-945034257/" className="text-center text-sm text-gray-300" target="_blank" rel="noreferrer">Shreyansh Srivastava</a>
       </div>
       </div>
     </section>

@@ -1,7 +1,6 @@
 import React from 'react';
 import ReactDOM from 'react-dom/client';
 import './index.css';
-import App from './App';
 import Home from './home';
 import Gallery from './gallery.js'
 import Disclaimer from './Footer/Disclaimer.js'
@@ -20,7 +19,6 @@ import Manufacturing from './Portfolio/Manufacturing.js'
 import Energy from './Portfolio/Energymgmt.js'
 import Services from './Footer/Services.js'
 import { RouterProvider, createBrowserRouter } from 'react-router-dom';
-import { useLocation } from 'react-router-dom';
 import EmailAuth from './Contact/EmailAuth.js';
 import ValueEng from './Portfolio/valueengg.js'
 import HomeLogin from './Contact/homelogin.js'

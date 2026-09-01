@@ -5,16 +5,13 @@ import Logo from './Untitled-2.png'
 import NavDropdown from 'react-bootstrap/NavDropdown';
 import './navbar.css'
 import { Link, NavLink } from "react-router-dom";
-import { useState } from 'react';
 
 function CollapsibleExample() {
-  const [dropdown, setDropdown] = useState(false);
-
   return (
     <div>
       <Navbar collapseOnSelect expand="lg" className="bg-gray-900 py-2 fixed top-0" variant="dark" style={{ zIndex: 999, fontSize: 17 }}>
         <Container>
-          <Navbar.Brand as={Link} to={"/"} className="text-white" style={{ fontWeight: 'bold', fontSize: 30 }}><img src={Logo} className='h-24 mr-3'/> </Navbar.Brand>
+          <Navbar.Brand as={Link} to={"/"} className="text-white" style={{ fontWeight: 'bold', fontSize: 30 }}><img src={Logo} alt="Site logo" className='h-24 mr-3'/> </Navbar.Brand>
           <Navbar.Toggle aria-controls="responsive-navbar-nav" />
           <Navbar.Collapse id="responsive-navbar-nav">
             <Nav className="me-auto">
