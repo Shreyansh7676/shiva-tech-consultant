@@ -6,15 +6,16 @@ import { AnimatePresence } from 'framer-motion'
 function Layout() {
   const location=useLocation();
   return (
-    <>
-    <Navbar />
-    <AnimatePresence mode="wait">
-    <Routes location={location} key={location.pathname}/>
-    <Outlet />
-    </AnimatePresence>
-    
-    <Footer />
-    </>
+    <div className="site-shell">
+      <Navbar />
+      <main className="site-main">
+        <AnimatePresence mode="wait">
+          <Routes location={location} key={location.pathname}/>
+          <Outlet />
+        </AnimatePresence>
+      </main>
+      <Footer />
+    </div>
   )
 }
 
