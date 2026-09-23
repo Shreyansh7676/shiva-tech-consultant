@@ -1,28 +1,28 @@
 import React from 'react';
 import ReactDOM from 'react-dom/client';
 import './index.css';
-import Home from './home';
-import Gallery from './gallery.js'
-import Disclaimer from './Footer/Disclaimer.js'
-import Contact from './Contact/contact.js';
-import Layout from './Layout';
+import Home from './home.jsx';
+import Gallery from './gallery.jsx'
+import Disclaimer from './Footer/Disclaimer.jsx'
+import Contact from './Contact/contact.jsx';
+import Layout from './Layout.jsx';
 import { Analytics } from '@vercel/analytics/react';
-import About from './about.js'
-import Techadv from './Portfolio/services/techadv.js'
+import About from './about.jsx'
+import Techadv from './Portfolio/services/techadv.jsx'
 import 'bootstrap/dist/css/bootstrap.min.css';
-import Asset from './Portfolio/assetmanagement.js';
-import Valuation from './Portfolio/services/valuation.js'
-import EnergyAudit from './Portfolio/services/energyaudit.js'
-import Project from './Portfolio/projectmgmt.js'
-import Privacy from './Footer/Privacy.js'
-import Manufacturing from './Portfolio/Manufacturing.js'
-import Energy from './Portfolio/Energymgmt.js'
-import Services from './Footer/Services.js'
+import Asset from './Portfolio/assetmanagement.jsx';
+import Valuation from './Portfolio/services/valuation.jsx'
+import EnergyAudit from './Portfolio/services/energyaudit.jsx'
+import Project from './Portfolio/projectmgmt.jsx'
+import Privacy from './Footer/Privacy.jsx'
+import Manufacturing from './Portfolio/Manufacturing.jsx'
+import Energy from './Portfolio/Energymgmt.jsx'
+import Services from './Footer/Services.jsx'
 import { RouterProvider, createBrowserRouter } from 'react-router-dom';
-import EmailAuth from './Contact/EmailAuth.js';
-import ValueEng from './Portfolio/valueengg.js'
-import HomeLogin from './Contact/homelogin.js'
-import AdminDashboard from './Admin/AdminDashboard.js';
+import EmailAuth from './Contact/EmailAuth.jsx';
+import ValueEng from './Portfolio/valueengg.jsx'
+import HomeLogin from './Contact/homelogin.jsx'
+import AdminDashboard from './Admin/AdminDashboard.jsx';
 
 const router=createBrowserRouter(
   [{
