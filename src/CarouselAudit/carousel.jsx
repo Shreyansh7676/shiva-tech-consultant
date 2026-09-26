@@ -1,43 +1,22 @@
-import { useState } from 'react';
-import Carousel from 'react-bootstrap/Carousel';
+import Carousel from '../components/Carousel';
 import usePageImages from '../content/usePageImages';
-import '../carousel.css';
 
 function ControlledCarousel() {
-  const [index, setIndex] = useState(0);
   const images = usePageImages('energyaudit');
   const slides = images.slides || [];
 
-  const handleSelect = (selectedIndex) => {
-    setIndex(selectedIndex);
-  };
-
   return (
-    <Carousel className="site-portfolio-carousel" activeIndex={index} onSelect={handleSelect}>
-      <Carousel.Item>
-        <img
-          style={{ height: '50vh', objectFit: 'contain' }}
-          className="d-block w-100 rounded-lg"
-          src={slides[0]}
-          alt="First slide"
-        />
-      </Carousel.Item>
-      <Carousel.Item>
-        <img
-          style={{ height: '50vh', objectFit: 'contain', background: 'black' }}
-          className="d-block w-100 rounded-lg"
-          src={slides[1]}
-          alt="Second slide"
-        />
-      </Carousel.Item>
-      <Carousel.Item>
-        <img
-          style={{ height: '50vh', objectFit: 'contain' }}
-          className="d-block w-100 rounded-lg"
-          src={slides[2]}
-          alt="Third slide"
-        />
-      </Carousel.Item>
+    <Carousel className="site-portfolio-carousel">
+      {slides.map((src, index) => (
+        <Carousel.Item key={index}>
+          <img
+            style={{ height: '50vh', objectFit: 'contain', background: index === 1 ? 'black' : undefined }}
+            className="d-block w-100 rounded-lg"
+            src={src}
+            alt={`Slide ${index + 1}`}
+          />
+        </Carousel.Item>
+      ))}
     </Carousel>
   );
 }

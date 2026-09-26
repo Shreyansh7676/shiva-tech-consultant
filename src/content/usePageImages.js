@@ -3,67 +3,80 @@ import { doc, getDoc } from 'firebase/firestore';
 import { getDownloadURL, ref } from 'firebase/storage';
 import { db, storage } from '../firebase';
 import { defaultImages } from './defaultImages';
+import { isImage, listFolder } from '../storage/storageService';
 
-const storagePathMap = {
-  home: {
-    type: 'slides',
-    paths: ['site/home/slide-1.png', 'site/home/slide-2.png', 'site/home/slide-3.png']
-  },
-  techadv: {
-    type: 'slides',
-    paths: ['site/portfolio/tech-advisory/slide-1.png', 'site/portfolio/tech-advisory/slide-2.jpg', 'site/portfolio/tech-advisory/slide-3.png']
-  },
-  assetmanagement: {
-    type: 'slides',
-    paths: ['site/portfolio/asset-management/slide-1.png', 'site/portfolio/asset-management/slide-2.jpg', 'site/portfolio/asset-management/slide-3.png']
-  },
-  energyaudit: {
-    type: 'slides',
-    paths: ['site/portfolio/energy-audit/slide-1.jpg', 'site/portfolio/energy-audit/slide-2.jpg', 'site/portfolio/energy-audit/slide-3.png']
-  },
-  energymanagement: {
-    type: 'slides',
-    paths: ['site/portfolio/energy-management/slide-1.webp', 'site/portfolio/energy-management/slide-2.jpg', 'site/portfolio/energy-management/slide-3.webp']
-  },
-  projectmanagement: {
-    type: 'slides',
-    paths: ['site/portfolio/project-management/slide-1.png', 'site/portfolio/project-management/slide-2.png', 'site/portfolio/project-management/slide-3.png']
-  },
-  valuation: {
-    type: 'slides',
-    paths: ['site/portfolio/valuation/slide-1.png', 'site/portfolio/valuation/slide-2.png', 'site/portfolio/valuation/slide-3.jpg']
-  },
-  value: {
-    type: 'slides',
-    paths: ['site/portfolio/value-engineering/slide-1.jpg', 'site/portfolio/value-engineering/slide-2.png', 'site/portfolio/value-engineering/slide-3.jpg', 'site/portfolio/value-engineering/slide-4.png']
-  },
+// Where each page's images live in the bucket. `slides`/`photos` folders are
+// discovered at runtime, so the number of images follows whatever is currently
+// in the bucket (uploaded or removed from the admin panel). `panels` keeps its
+// named slots because those are addressed individually.
+const sourceMap = {
+  home: { type: 'slides', folder: 'home' },
+  techadv: { type: 'slides', folder: 'portfolio/tech-advisory' },
+  assetmanagement: { type: 'slides', folder: 'portfolio/asset-management' },
+  energyaudit: { type: 'slides', folder: 'portfolio/energy-audit' },
+  energymanagement: { type: 'slides', folder: 'portfolio/energy-management' },
+  projectmanagement: { type: 'slides', folder: 'portfolio/project-management' },
+  valuation: { type: 'slides', folder: 'portfolio/valuation' },
+  value: { type: 'slides', folder: 'portfolio/value-engineering' },
   manufacturing: {
     type: 'panels',
     paths: {
-      spm: 'site/portfolio/manufacturing/spm.jpg',
-      airPollution: 'site/portfolio/manufacturing/air-pollution.png',
-      structure: 'site/portfolio/manufacturing/structure.png',
-      fabrication: 'site/portfolio/manufacturing/fabrication.png'
+      spm: 'portfolio/manufacturing/spm.jpg',
+      airPollution: 'portfolio/manufacturing/air-pollution.png',
+      structure: 'portfolio/manufacturing/structure.png',
+      fabrication: 'portfolio/manufacturing/fabrication.png'
     }
   },
-  gallery: {
-    type: 'gallery',
-    paths: [
-      'site/gallery/photo-1.jpg',
-      'site/gallery/photo-2.jpg',
-      'site/gallery/photo-3.jpg',
-      'site/gallery/photo-4.jpg',
-      'site/gallery/photo-5.jpg',
-      'site/gallery/photo-6.jpg',
-      'site/gallery/photo-7.jpg',
-      'site/gallery/photo-8.jpg',
-      'site/gallery/photo-9.jpg'
-    ]
-  }
+  gallery: { type: 'photos', folder: 'gallery' }
 };
 
-// Memory cache across page transitions
+// Storage lists objects lexicographically, so slide-10 would sort before
+// slide-2. Compare the names numerically-aware instead.
+const byName = (a, b) => a.name.localeCompare(b.name, undefined, { numeric: true, sensitivity: 'base' });
+
+// Memory cache across page transitions.
 const urlCache = new Map();
+
+function mergeStored(fallback, remote) {
+  const merged = { ...fallback, ...remote };
+
+  if (Array.isArray(fallback.slides) && Array.isArray(remote.slides)) {
+    const length = Math.max(fallback.slides.length, remote.slides.length);
+    merged.slides = Array.from({ length }, (_, index) => remote.slides[index] || fallback.slides[index]);
+  } else if (fallback.panels && remote.panels) {
+    merged.panels = { ...fallback.panels, ...remote.panels };
+  } else if (Array.isArray(fallback.photos) && Array.isArray(remote.photos)) {
+    merged.photos = remote.photos;
+  }
+
+  return merged;
+}
+
+async function discoverFolder(folder) {
+  const { files } = await listFolder(folder);
+
+  return files
+    .filter((file) => isImage(file.contentType, file.path))
+    .sort(byName)
+    .map((file) => file.url)
+    .filter(Boolean);
+}
+
+async function resolvePanels(paths) {
+  const resolved = {};
+  let found = false;
+
+  await Promise.all(Object.entries(paths).map(async ([key, storagePath]) => {
+    try {
+      resolved[key] = await getDownloadURL(ref(storage, storagePath));
+      found = true;
+    } catch {
+      // Leave this slot on the bundled default.
+    }
+  }));
+
+  return found ? resolved : null;
+}
 
 export default function usePageImages(pageId) {
   const fallback = useMemo(() => defaultImages[pageId] || {}, [pageId]);
@@ -74,100 +87,46 @@ export default function usePageImages(pageId) {
 
     if (urlCache.has(pageId)) {
       setImages(urlCache.get(pageId));
-      return;
+      return undefined;
     }
 
-    async function resolveImages() {
-      // 1. Try Firestore document first (if populated via automated script)
+    const source = sourceMap[pageId];
+    if (!source || !storage) return undefined;
+
+    const commit = (next) => {
+      if (!mounted) return;
+      urlCache.set(pageId, next);
+      setImages(next);
+    };
+
+    async function resolve() {
       try {
-        const snapshot = await getDoc(doc(db, 'siteImages', pageId));
-        if (snapshot.exists()) {
-          const remote = snapshot.data();
-          let merged = { ...fallback, ...remote };
-
-          if (Array.isArray(fallback.slides) && Array.isArray(remote.slides)) {
-            merged.slides = fallback.slides.map((defaultSrc, idx) => remote.slides[idx] || defaultSrc);
-          } else if (fallback.panels && remote.panels) {
-            merged.panels = { ...fallback.panels, ...remote.panels };
-          } else if (Array.isArray(fallback.photos) && Array.isArray(remote.photos)) {
-            merged.photos = remote.photos;
+        if (source.type === 'slides' || source.type === 'photos') {
+          const urls = await discoverFolder(source.folder);
+          if (urls.length) {
+            commit(source.type === 'slides' ? { ...fallback, slides: urls } : { ...fallback, photos: urls });
+            return;
           }
-
-          if (mounted) {
-            urlCache.set(pageId, merged);
-            setImages(merged);
+        } else if (source.type === 'panels') {
+          const panels = await resolvePanels(source.paths);
+          if (panels) {
+            commit({ ...fallback, panels: { ...(fallback.panels || {}), ...panels } });
             return;
           }
         }
       } catch {
-        // Fall through to direct Storage resolution
+        // Bucket not readable — fall through to the stored document.
       }
 
-      // 2. Direct Storage resolution (supports manual drag-and-drop into Firebase Storage)
-      const mapping = storagePathMap[pageId];
-      if (!mapping || !storage) return;
-
       try {
-        if (mapping.type === 'slides') {
-          const resolvedSlides = await Promise.all(
-            mapping.paths.map(async (storagePath, idx) => {
-              try {
-                return await getDownloadURL(ref(storage, storagePath));
-              } catch {
-                return fallback.slides?.[idx];
-              }
-            })
-          );
-
-          if (mounted && resolvedSlides.some(Boolean)) {
-            const next = { ...fallback, slides: resolvedSlides };
-            urlCache.set(pageId, next);
-            setImages(next);
-          }
-        } else if (mapping.type === 'panels') {
-          const resolvedPanels = { ...(fallback.panels || {}) };
-          let foundAny = false;
-
-          await Promise.all(
-            Object.entries(mapping.paths).map(async ([panelKey, storagePath]) => {
-              try {
-                const url = await getDownloadURL(ref(storage, storagePath));
-                resolvedPanels[panelKey] = url;
-                foundAny = true;
-              } catch {
-                // Keep fallback
-              }
-            })
-          );
-
-          if (mounted && foundAny) {
-            const next = { ...fallback, panels: resolvedPanels };
-            urlCache.set(pageId, next);
-            setImages(next);
-          }
-        } else if (mapping.type === 'gallery') {
-          const resolvedPhotos = await Promise.all(
-            mapping.paths.map(async (storagePath, idx) => {
-              try {
-                return await getDownloadURL(ref(storage, storagePath));
-              } catch {
-                return fallback.photos?.[idx];
-              }
-            })
-          );
-
-          if (mounted && resolvedPhotos.some(Boolean)) {
-            const next = { ...fallback, photos: resolvedPhotos };
-            urlCache.set(pageId, next);
-            setImages(next);
-          }
-        }
-      } catch (err) {
-        console.warn(`[usePageImages] Could not resolve storage paths for ${pageId}:`, err);
+        const snapshot = await getDoc(doc(db, 'siteImages', pageId));
+        if (snapshot.exists()) commit(mergeStored(fallback, snapshot.data()));
+      } catch {
+        // Keep the bundled defaults.
       }
     }
 
-    resolveImages();
+    resolve();
 
     return () => {
       mounted = false;

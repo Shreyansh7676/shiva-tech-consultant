@@ -234,6 +234,19 @@ const manifest = {
   }
 };
 
+// Objects live at the bucket root (home/, gallery/, portfolio/). The manifest
+// keeps a legacy "site/" prefix, which is stripped before uploading.
+for (const config of Object.values(manifest)) {
+  const items = config.type === 'gallery'
+    ? config.photos
+    : config.type === 'slides'
+      ? config.slides
+      : Object.values(config.panels || {});
+  for (const item of items) {
+    item.storagePath = item.storagePath.replace(/^site\//, '');
+  }
+}
+
 async function main() {
   console.log('=== Firebase Storage Carousel & Gallery Image Migration ===');
   console.log(`Mode: ${apply ? 'APPLY (uploading & writing to Firestore)' : 'DRY RUN (no network changes)'}`);

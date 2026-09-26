@@ -84,13 +84,13 @@ svg {
   width: 100%;
 }
 
-.site-portfolio-carousel .carousel-item > img {
+.site-portfolio-carousel .xc-carousel__item > img {
   width: 100%;
   height: clamp(16rem, 34vw, 28rem) !important;
   object-fit: contain;
 }
 
-.site-home-carousel .carousel-item > img {
+.site-home-carousel .xc-carousel__item > img {
   width: 100%;
   height: clamp(24rem, 68vh, 48rem) !important;
   object-fit: cover;

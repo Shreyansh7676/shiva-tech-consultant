@@ -5,13 +5,11 @@ service firebase.storage {
       return request.auth != null && request.auth.token.admin == true;
     }
 
-    match /site/{allPaths=**} {
+    // Website images live at the bucket root (home/, gallery/, portfolio/).
+    // Anyone may view them; only admins may upload, replace or delete.
+    match /{allPaths=**} {
       allow read: if true;
       allow write: if isAdmin();
-    }
-
-    match /{allPaths=**} {
-      allow read, write: if false;
     }
   }
 }

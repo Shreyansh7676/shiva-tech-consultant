@@ -5,6 +5,7 @@ import { doc, getDoc, runTransaction, serverTimestamp } from 'firebase/firestore
 import { auth, db } from '../firebase';
 import { getPageDefinition, makePageDocument, pageRegistry } from '../content/contentRegistry';
 import { sanitizeRichHtml } from '../content/RichContent';
+import ImageManager from './ImageManager';
 import './admin.css';
 
 function AdminLogin() {
@@ -42,7 +43,7 @@ function AdminLogin() {
   return <main className="admin-login"><form onSubmit={submit} className="admin-card"><h1>Admin dashboard</h1><p>Sign in with your administrator email and password.</p><label>Email<input type="email" value={email} onChange={(event) => setEmail(event.target.value)} required autoComplete="email" /></label><label>Password<input type="password" value={password} onChange={(event) => setPassword(event.target.value)} required autoComplete="current-password" /></label><button disabled={submitting}>{submitting ? 'Signing in…' : 'Sign in'}</button><button type="button" className="admin-link" onClick={reset}>Forgot password?</button>{status && <p role="status">{status}</p>}</form></main>;
 }
 
-function ContentEditor({ user }) {
+function ContentEditor({ onDirtyChange }) {
   const [pageId, setPageId] = useState(pageRegistry[0].id);
   const [sectionId, setSectionId] = useState(pageRegistry[0].sections[0].id);
   const [page, setPage] = useState(() => makePageDocument(pageRegistry[0].id));
@@ -88,6 +89,10 @@ function ContentEditor({ user }) {
     // Load only on first render. Dropdown handlers explicitly load future pages.
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
+
+  useEffect(() => {
+    onDirtyChange?.(dirty);
+  }, [dirty, onDirtyChange]);
 
   useEffect(() => {
     const warning = (event) => {
@@ -164,12 +169,14 @@ function ContentEditor({ user }) {
     setStatus('');
   };
 
-  return <main className="admin-shell"><header><div><p className="admin-eyebrow">Content management</p><h1>Website editor</h1><p>{user.email}</p></div><button className="admin-outline" onClick={() => signOut(auth)}>Sign out</button></header><section className="admin-card admin-editor"><div className="admin-selectors"><label>Webpage<select value={pageId} onChange={choosePage} disabled={dirty || saving}>{pageRegistry.map((entry) => <option key={entry.id} value={entry.id}>{entry.label}</option>)}</select></label><label>Page section<select value={sectionId} onChange={chooseSection} disabled={dirty || saving}>{definition.sections.map((section) => <option key={section.id} value={section.id}>{section.label}</option>)}</select></label><a href={definition.path} target="_blank" rel="noreferrer">View public page</a></div>{dirty && <p className="admin-warning">Submit changes before choosing another webpage or section.</p>}{loading ? <p>Loading content…</p> : <Editor key={`${pageId}-${sectionId}-${sectionRevision}`} apiKey={import.meta.env.VITE_TINYMCE_API_KEY || 'no-api-key'} initialValue={savedHtml} onInit={handleEditorInit} onEditorChange={setDraft} init={{ height: 520, menubar: false, plugins: 'advlist autolink lists link table preview fullscreen wordcount', toolbar: 'undo redo | blocks | bold italic underline | alignleft aligncenter alignright | bullist numlist | link table | removeformat | preview fullscreen', content_style: 'body { font-family: Arial, sans-serif; font-size: 16px; line-height: 1.55; }', valid_elements: 'p,br,strong/b,em/i,u,h1,h2,h3,h4,ul,ol,li,a[href|target|rel],blockquote,table,thead,tbody,tr,th[colspan|rowspan],td[colspan|rowspan]' }} />}<div className="admin-actions"><button onClick={submit} disabled={!dirty || saving || loading}>{saving ? 'Submitting…' : 'Submit changes'}</button>{status && <p role="status">{status}</p>}</div></section></main>;
+  return <section className="admin-card admin-editor"><div className="admin-selectors"><label>Webpage<select value={pageId} onChange={choosePage} disabled={dirty || saving}>{pageRegistry.map((entry) => <option key={entry.id} value={entry.id}>{entry.label}</option>)}</select></label><label>Page section<select value={sectionId} onChange={chooseSection} disabled={dirty || saving}>{definition.sections.map((section) => <option key={section.id} value={section.id}>{section.label}</option>)}</select></label><a href={definition.path} target="_blank" rel="noreferrer">View public page</a></div>{dirty && <p className="admin-warning">Submit changes before choosing another webpage or section.</p>}{loading ? <p>Loading content…</p> : <Editor key={`${pageId}-${sectionId}-${sectionRevision}`} apiKey={import.meta.env.VITE_TINYMCE_API_KEY || 'no-api-key'} initialValue={savedHtml} onInit={handleEditorInit} onEditorChange={setDraft} init={{ height: 520, menubar: false, plugins: 'advlist autolink lists link table preview fullscreen wordcount', toolbar: 'undo redo | blocks | bold italic underline | alignleft aligncenter alignright | bullist numlist | link table | removeformat | preview fullscreen', content_style: 'body { font-family: Arial, sans-serif; font-size: 16px; line-height: 1.55; }', valid_elements: 'p,br,strong/b,em/i,u,h1,h2,h3,h4,ul,ol,li,a[href|target|rel],blockquote,table,thead,tbody,tr,th[colspan|rowspan],td[colspan|rowspan]' }} />}<div className="admin-actions"><button onClick={submit} disabled={!dirty || saving || loading}>{saving ? 'Submitting…' : 'Submit changes'}</button>{status && <p role="status">{status}</p>}</div></section>;
 }
 
 export default function AdminDashboard() {
   const [user, setUser] = useState(undefined);
   const [admin, setAdmin] = useState(false);
+  const [view, setView] = useState('content');
+  const [dirty, setDirty] = useState(false);
 
   useEffect(() => onAuthStateChanged(auth, async (nextUser) => {
     setUser(nextUser || null);
@@ -188,5 +195,13 @@ export default function AdminDashboard() {
   if (user === undefined) return <main className="admin-login"><p>Checking authentication…</p></main>;
   if (!user) return <AdminLogin />;
   if (!admin) return <main className="admin-login"><section className="admin-card"><h1>Access denied</h1><p>This signed-in account is not an administrator.</p><button onClick={() => signOut(auth)}>Sign out</button></section></main>;
-  return <ContentEditor user={user} />;
+
+  const changeView = (next) => {
+    if (next === view) return;
+    if (view === 'content' && dirty && !window.confirm('You have unsaved content changes. Switch to images and discard them?')) return;
+    setDirty(false);
+    setView(next);
+  };
+
+  return <main className="admin-shell"><header><div><p className="admin-eyebrow">Administration</p><h1>{view === 'content' ? 'Website content' : 'Image storage'}</h1><p>{user.email}</p></div><div className="admin-header-actions"><nav className="admin-tabs"><button type="button" className={view === 'content' ? 'is-active' : ''} onClick={() => changeView('content')}>Content</button><button type="button" className={view === 'images' ? 'is-active' : ''} onClick={() => changeView('images')}>Images</button></nav><button className="admin-outline" onClick={() => signOut(auth)}>Sign out</button></div></header>{view === 'content' ? <ContentEditor onDirtyChange={setDirty} /> : <ImageManager />}</main>;
 }
