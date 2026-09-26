@@ -22,3 +22,6 @@ yarn-debug.log*
 yarn-error.log*
 service-account*.json
 firebase-service-account*.json
+*serviceAccount*.json
+consultant-manish-firebase-adminsdk-di7a5-ba99fbf28d.json
+/firebase-storage-upload
