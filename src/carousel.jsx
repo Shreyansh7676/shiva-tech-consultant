@@ -1,12 +1,14 @@
 import { useState } from 'react';
 import Carousel from 'react-bootstrap/Carousel';
-import img1 from './images/3.png'
-import img2 from './New folder/Project Management Institute.png'
-import img3 from './New folder/Untitled-2.png'
+import usePageImages from './content/usePageImages';
+
+
 import './carousel.css'
 
 function ControlledCarousel() {
   const [index, setIndex] = useState(0);
+  const images = usePageImages('home');
+  const slides = images.slides || [];
 
   const handleSelect = (selectedIndex) => {
     setIndex(selectedIndex);
@@ -17,7 +19,7 @@ function ControlledCarousel() {
       <Carousel.Item>
       <img style={{height:'90vh',objectFit:'cover'}}
         className="d-block w-100"
-        src={img1}
+        src={slides[0]}
         alt="First slide"
       />
       <div className="absolute inset-0 bg-black opacity-45"></div>
@@ -29,7 +31,7 @@ function ControlledCarousel() {
       <Carousel.Item>
       <img style={{height:'90vh',objectFit:'cover', background:'black'}}
         className="d-block w-100"
-        src={img2}
+        src={slides[1]}
         alt="Second slide"
       />
       <div className="absolute inset-0 bg-black opacity-60"></div>
@@ -41,7 +43,7 @@ function ControlledCarousel() {
       <Carousel.Item>
       <img style={{height:'90vh',objectFit:'cover'}}
         className="d-block w-100"
-        src={img3}
+        src={slides[2]}
         alt="Third slide"
       />
       <div className="absolute inset-0 bg-black opacity-55"></div>

@@ -42,7 +42,8 @@
     "preview": "vite preview",
     "admin:grant": "node scripts/manage-admin.js grant",
     "admin:revoke": "node scripts/manage-admin.js revoke",
-    "content:seed": "node scripts/seed-content.js"
+    "content:seed": "node scripts/seed-content.js",
+    "images:upload": "node scripts/upload-images.js"
   },
   "devDependencies": {
     "@vitejs/plugin-react": "^5.1.1",

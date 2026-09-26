@@ -1,6 +1,35 @@
 import React, { useEffect } from 'react';
-import AOS from 'aos'; import 'aos/dist/aos.css';
-import usePageContent from './content/usePageContent'; import RichContent from './content/RichContent';
-const posters = ['https://images.unsplash.com/photo-1573164713714-d95e436ab8d6?ixlib=rb-4.0.3&auto=format&fit=crop&w=1469&q=80','https://images.unsplash.com/photo-1618761714954-0b8cd0026356?ixlib=rb-4.0.3&auto=format&fit=crop&w=1170&q=80','https://images.unsplash.com/photo-1559136555-9303baea8ebd?ixlib=rb-4.0.3&auto=format&fit=crop&w=1470&q=80','https://images.unsplash.com/photo-1591228127791-8e2eaef098d3?ixlib=rb-4.0.3&auto=format&fit=crop&w=1470&q=80','https://images.unsplash.com/photo-1634128221889-82ed6efebfc3?ixlib=rb-4.0.3&auto=format&fit=crop&w=1470&q=80','https://images.unsplash.com/photo-1663616132598-e9a1ee3ad186?ixlib=rb-4.0.3&auto=format&fit=crop&w=1470&q=80','https://images.unsplash.com/photo-1426260193283-c4daed7c2024?ixlib=rb-4.0.3&auto=format&fit=crop&w=1476&q=80','https://images.unsplash.com/photo-1470240731273-7821a6eeb6bd?ixlib=rb-4.0.3&auto=format&fit=crop&w=1470&q=80','https://plus.unsplash.com/premium_photo-1663012880499-47f1ca50459d?ixlib=rb-4.0.3&auto=format&fit=crop&w=1470&q=80'];
-export function CardTwo() { const sections = usePageContent('gallery'); useEffect(() => { AOS.init({ duration: 1200 }); }, []); return <section className="site-page"><div className="site-page__container"><div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">{posters.map((poster, index) => <div key={poster} className="overflow-hidden rounded-lg border bg-white" data-aos="fade-up"><img src={poster} className="aspect-video w-full rounded-md object-cover" alt="" /><div className="min-h-min p-4"><RichContent html={sections[`card${index + 1}`].html} className="text-gray-600" /></div></div>)}</div></div></section>; }
+import AOS from 'aos';
+import 'aos/dist/aos.css';
+import usePageContent from './content/usePageContent';
+import usePageImages from './content/usePageImages';
+import RichContent from './content/RichContent';
+
+export function CardTwo() {
+  const sections = usePageContent('gallery');
+  const images = usePageImages('gallery');
+  const posters = images.photos || [];
+
+  useEffect(() => {
+    AOS.init({ duration: 1200 });
+  }, []);
+
+  return (
+    <section className="site-page">
+      <div className="site-page__container">
+        <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
+          {posters.map((poster, index) => (
+            <div key={`${poster}-${index}`} className="overflow-hidden rounded-lg border bg-white" data-aos="fade-up">
+              <img src={poster} className="aspect-video w-full rounded-md object-cover" alt="" />
+              <div className="min-h-min p-4">
+                <RichContent html={sections[`card${index + 1}`]?.html} className="text-gray-600" />
+              </div>
+            </div>
+          ))}
+        </div>
+      </div>
+    </section>
+  );
+}
+
 export default CardTwo;
