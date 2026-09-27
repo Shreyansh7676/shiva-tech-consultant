@@ -18,6 +18,21 @@ const sourceMap = {
   projectmanagement: { type: 'slides', folder: 'portfolio/project-management' },
   valuation: { type: 'slides', folder: 'portfolio/valuation' },
   value: { type: 'slides', folder: 'portfolio/value-engineering' },
+  environmentmanagement: { type: 'slides', folder: 'portfolio/environment-management' },
+  esgmanagement: { type: 'slides', folder: 'portfolio/esg-management' },
+  safetyAudit: { type: 'slides', folder: 'portfolio/safety-audit' },
+  managementSystemAudit: { type: 'slides', folder: 'portfolio/management-system-audit' },
+  ghgvalidation: { type: 'slides', folder: 'portfolio/ghg-validation' },
+  lca: { type: 'slides', folder: 'portfolio/lca' },
+  sales: {
+    type: 'panels',
+    paths: {
+      spm: 'portfolio/sales/spm.jpg',
+      airPollution: 'portfolio/sales/air-pollution.png',
+      structure: 'portfolio/sales/structure.png',
+      fabrication: 'portfolio/sales/fabrication.png'
+    }
+  },
   manufacturing: {
     type: 'panels',
     paths: {

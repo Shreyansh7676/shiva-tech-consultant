@@ -69,6 +69,32 @@ export const defaultImages = {
       fabrication: mfgFab
     }
   },
+  environmentmanagement: {
+    slides: [energy1, energy2, energy1]
+  },
+  esgmanagement: {
+    slides: [energy1, energy2, energy1]
+  },
+  ghgvalidation: {
+    slides: [audit1, audit2, audit3]
+  },
+  lca: {
+    slides: [audit1, audit2, audit3]
+  },
+  safetyAudit: {
+    slides: [audit1, audit2, audit3]
+  },
+  managementSystemAudit: {
+    slides: [audit1, audit2, audit3]
+  },
+  sales: {
+    panels: {
+      spm: mfgSpm,
+      airPollution: mfgAir,
+      structure: mfgStructure,
+      fabrication: mfgFab
+    }
+  },
   gallery: {
     photos: [
       'https://images.unsplash.com/photo-1573164713714-d95e436ab8d6?ixlib=rb-4.0.3&auto=format&fit=crop&w=1469&q=80',

@@ -5,7 +5,10 @@ export const pageRegistry = [
   ['assetmanagement', 'Asset Management', '/assetmanagement'], ['projectmanagement', 'Project Management', '/projectmanagement'],
   ['energymanagement', 'Energy Management', '/energymanagement'], ['value', 'Value Engineering', '/value'],
   ['energyaudit', 'Energy Audit', '/energyaudit'], ['valuation', 'Valuation', '/valuation'], ['techadv', 'Technical Advisory', '/techadv'],
-  ['manufacturing', 'Manufacturing', '/manufacturing'], ['services', 'Terms of Service', '/services'], ['privacy', 'Privacy Policy', '/privacy'], ['disclaimer', 'Disclaimer', '/disclaimer']
+  ['manufacturing', 'Manufacturing', '/manufacturing'], ['services', 'Terms of Service', '/services'], ['privacy', 'Privacy Policy', '/privacy'], ['disclaimer', 'Disclaimer', '/disclaimer'],
+  ['environmentmanagement', 'Environment Management', '/environmentmanagement'], ['esgmanagement', 'ESG Management', '/esgmanagement'],
+  ['safetyAudit', 'Safety Audit', '/safetyaudit'], ['managementSystemAudit', 'Management System Audit', '/managementsystemaudit'],
+  ['ghgvalidation', 'GHG Validation', '/ghgvalidation'], ['lca', 'LCA', '/lca'], ['sales', 'Sales', '/sales']
 ].map(([id, label, path]) => ({ id, label, path, sections: Object.keys(defaults[id].sections).map((sectionId) => ({ id: sectionId, label: sectionId.replace(/([A-Z])/g, ' $1').replace(/^./, (value) => value.toUpperCase()) })) }));
 
 export const defaultPages = defaults;

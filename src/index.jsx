@@ -23,6 +23,13 @@ import EmailAuth from './Contact/EmailAuth.jsx';
 import ValueEng from './Portfolio/valueengg.jsx'
 import HomeLogin from './Contact/homelogin.jsx'
 import AdminDashboard from './Admin/AdminDashboard.jsx';
+import EnvironmentManagement from './Portfolio/TechnicalAdvisory/EnvironmentManagement.jsx';
+import EsgManagement from './Portfolio/TechnicalAdvisory/esgmanagement.jsx';
+import SafetyAudit from './Portfolio/services/safetyAudit.jsx';
+import ManagementSystemAudit from './Portfolio/services/managementSystemAudit.jsx';
+import GHGValidation from './Portfolio/services/ghgvalidation.jsx';
+import LCA from './Portfolio/services/lca.jsx';
+import Sales from './Portfolio/sales.jsx';
 
 const router=createBrowserRouter(
   [{
@@ -97,8 +104,36 @@ const router=createBrowserRouter(
         {
           path:"privacy",
           element:<Privacy />
+        },
+        {
+          path:"environmentmanagement",
+          element:<EnvironmentManagement />
+        },
+        {
+          path:"esgmanagement",
+          element:<EsgManagement />
+        },
+        {
+          path:"safetyaudit",
+          element:<SafetyAudit />
+        },
+        {
+          path:"managementsystemaudit",
+          element:<ManagementSystemAudit />
+        },
+        {
+          path:"ghgvalidation",
+          element:<GHGValidation />
+        },
+        {
+          path:"lca",
+          element:<LCA />
+        },
+        {
+          path:"sales",
+          element:<Sales />
         }
-        
+
       ]
     },
     { path: '/admin', element: <AdminDashboard /> }
