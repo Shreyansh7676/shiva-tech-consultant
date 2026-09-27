@@ -22,7 +22,7 @@ const sourceMap = {
   esgmanagement: { type: 'slides', folder: 'portfolio/esg-management' },
   safetyAudit: { type: 'slides', folder: 'portfolio/safety-audit' },
   managementSystemAudit: { type: 'slides', folder: 'portfolio/management-system-audit' },
-  ghgvalidation: { type: 'slides', folder: 'portfolio/ghg-validation' },
+  ghgvalidation: { type: 'slides', folder: 'portfolio/ghgvalidation' },
   lca: { type: 'slides', folder: 'portfolio/lca' },
   sales: {
     type: 'panels',
