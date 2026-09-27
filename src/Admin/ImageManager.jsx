@@ -7,6 +7,7 @@ import {
   isImage,
   joinPath,
   listFolder,
+  parentFolder,
   renameObject,
   sanitizeFileName,
   uploadObject
@@ -201,6 +202,7 @@ export default function ImageManager() {
   const allSelected = files.length > 0 && files.every((file) => selected.has(file.path));
   const toggleAll = () => setSelected(allSelected ? new Set() : new Set(files.map((file) => file.path)));
   const segments = useMemo(() => prefix.split('/').filter(Boolean), [prefix]);
+  const parent = parentFolder(prefix);
 
   return (
     <section
@@ -231,6 +233,15 @@ export default function ImageManager() {
       </div>
 
       <nav className="storage-breadcrumbs" aria-label="Bucket path">
+        <button
+          type="button"
+          className="storage-back"
+          onClick={() => setPrefix(parent)}
+          disabled={!prefix || busy}
+          title={prefix ? `Back to ${locationLabel(parent)}` : 'Already at the bucket root'}
+        >
+          ← Back
+        </button>
         <button type="button" onClick={() => setPrefix(BUCKET_ROOT)} disabled={!prefix || busy}>bucket</button>
         {segments.map((segment, index) => {
           const target = segments.slice(0, index + 1).join('/');

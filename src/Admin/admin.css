@@ -12,6 +12,8 @@
 .admin-card .storage-breadcrumbs button{background:transparent;color:#0f766e;border:0;padding:0;font:inherit;font-weight:700;cursor:pointer}
 .admin-card .storage-breadcrumbs button:disabled{color:#0f172a;opacity:1;cursor:default}
 .storage-breadcrumbs span{color:#94a3b8}
+.admin-card .storage-breadcrumbs .storage-back{background:#e2e8f0;color:#0f172a;border-radius:6px;padding:5px 12px;margin-right:4px}
+.admin-card .storage-breadcrumbs .storage-back:disabled{color:#64748b}
 .storage-status{color:#0f766e;font-weight:700}
 .storage-progress{background:#e2e8f0;border-radius:999px;height:8px;overflow:hidden;margin:12px 0}
 .storage-progress span{display:block;height:100%;background:#0f766e;transition:width .2s}
