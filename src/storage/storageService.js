@@ -142,6 +142,25 @@ export async function listAllFiles(prefix = BUCKET_ROOT) {
   };
 }
 
+// Paths only — one request for the whole folder, with no per-object metadata
+// calls, so pages can start fetching images immediately.
+export async function listObjectPaths(prefix = BUCKET_ROOT) {
+  const path = normalizePath(prefix);
+  requireStorage();
+
+  const result = await listAll(ref(storage, path));
+  return result.items.map((item) => item.fullPath);
+}
+
+// Public download URL for a readable object. Skips the extra metadata request
+// that getDownloadURL() costs.
+export function objectMediaUrl(path) {
+  const targetPath = normalizePath(path);
+  const bucket = storage?.app?.options?.storageBucket;
+  if (!targetPath || !bucket) return '';
+  return `https://firebasestorage.googleapis.com/v0/b/${bucket}/o/${encodeURIComponent(targetPath)}?alt=media`;
+}
+
 export function uploadObject(path, file, options = {}) {
   const targetPath = requireObjectPath(path);
   requireStorage();

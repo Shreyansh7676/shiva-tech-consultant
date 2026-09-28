@@ -13,6 +13,7 @@ import {
   uploadObject
 } from '../storage/storageService';
 import { refreshSiteImageReferences } from '../storage/siteImageSync';
+import { clearImageCache } from '../content/usePageImages';
 
 const ignoreSyncFailure = () => {};
 
@@ -104,6 +105,7 @@ export default function ImageManager() {
         uploaded += 1;
       }
       setStatus(`Uploaded ${uploaded} file${uploaded === 1 ? '' : 's'} to ${locationLabel(prefix)}.`);
+      clearImageCache();
       await load(prefix);
     } catch (uploadError) {
       setError(uploadError?.message || 'Upload failed.');
@@ -125,6 +127,7 @@ export default function ImageManager() {
       await uploadObject(target, file, { onProgress: reportProgress });
       await refreshSiteImageReferences(target).catch(ignoreSyncFailure);
       setStatus(`Replaced ${target}.`);
+      clearImageCache();
       await load(prefix);
     } catch (replaceError) {
       setError(replaceError?.message || 'Replace failed.');
@@ -152,6 +155,7 @@ export default function ImageManager() {
       const result = await renameObject(file.path, nextName);
       await refreshSiteImageReferences(result.path, file.path).catch(ignoreSyncFailure);
       setStatus(`Renamed to ${result.path}.`);
+      clearImageCache();
       await load(prefix);
     } catch (renameError) {
       setError(renameError?.message || 'Rename failed.');
@@ -172,6 +176,7 @@ export default function ImageManager() {
       if (failed.length) {
         setError(failed.map((entry) => `${entry.path}: ${entry.error?.message || 'failed'}`).join('; '));
       }
+      clearImageCache();
       await load(prefix);
     } catch (deleteError) {
       setError(deleteError?.message || 'Delete failed.');

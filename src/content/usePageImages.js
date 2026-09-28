@@ -3,7 +3,7 @@ import { doc, getDoc } from 'firebase/firestore';
 import { getDownloadURL, ref } from 'firebase/storage';
 import { db, storage } from '../firebase';
 import { defaultImages } from './defaultImages';
-import { isImage, listFolder } from '../storage/storageService';
+import { isImage, listObjectPaths, objectMediaUrl } from '../storage/storageService';
 
 // Where each page's images live in the bucket. `slides`/`photos` folders are
 // discovered at runtime, so the number of images follows whatever is currently
@@ -47,10 +47,17 @@ const sourceMap = {
 
 // Storage lists objects lexicographically, so slide-10 would sort before
 // slide-2. Compare the names numerically-aware instead.
-const byName = (a, b) => a.name.localeCompare(b.name, undefined, { numeric: true, sensitivity: 'base' });
+const byName = (a, b) => a.localeCompare(b, undefined, { numeric: true, sensitivity: 'base' });
 
-// Memory cache across page transitions.
+// Short-lived cache, so visits don't re-list every time while a newly uploaded
+// image still appears once the TTL lapses — or immediately, when the admin
+// panel invalidates it.
+const CACHE_TTL = 60 * 1000;
 const urlCache = new Map();
+
+export function clearImageCache() {
+  urlCache.clear();
+}
 
 function mergeStored(fallback, remote) {
   const merged = { ...fallback, ...remote };
@@ -68,12 +75,12 @@ function mergeStored(fallback, remote) {
 }
 
 async function discoverFolder(folder) {
-  const { files } = await listFolder(folder);
+  const paths = await listObjectPaths(folder);
 
-  return files
-    .filter((file) => isImage(file.contentType, file.path))
+  return paths
+    .filter((path) => isImage('', path))
     .sort(byName)
-    .map((file) => file.url)
+    .map((path) => objectMediaUrl(path))
     .filter(Boolean);
 }
 
@@ -95,13 +102,14 @@ async function resolvePanels(paths) {
 
 export default function usePageImages(pageId) {
   const fallback = useMemo(() => defaultImages[pageId] || {}, [pageId]);
-  const [images, setImages] = useState(() => urlCache.get(pageId) || fallback);
+  const [images, setImages] = useState(() => urlCache.get(pageId)?.images || fallback);
 
   useEffect(() => {
     let mounted = true;
 
-    if (urlCache.has(pageId)) {
-      setImages(urlCache.get(pageId));
+    const cached = urlCache.get(pageId);
+    if (cached && Date.now() - cached.at < CACHE_TTL) {
+      setImages(cached.images);
       return undefined;
     }
 
@@ -110,7 +118,7 @@ export default function usePageImages(pageId) {
 
     const commit = (next) => {
       if (!mounted) return;
-      urlCache.set(pageId, next);
+      urlCache.set(pageId, { images: next, at: Date.now() });
       setImages(next);
     };
 

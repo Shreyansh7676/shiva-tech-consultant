@@ -84,6 +84,11 @@ svg {
   width: 100%;
 }
 
+.site-portfolio-carousel.xc-carousel-empty {
+  height: clamp(16rem, 34vw, 28rem);
+  border-radius: 0.5rem;
+}
+
 .site-portfolio-carousel .xc-carousel__item > img {
   width: 100%;
   height: clamp(16rem, 34vw, 28rem) !important;

@@ -5,6 +5,12 @@ export default function PageCarousel({ pageId, className = 'site-portfolio-carou
   const images = usePageImages(pageId);
   const slides = images.slides || [];
 
+  // Nothing uploaded for this page yet: keep the slot so the layout holds its
+  // shape and future images have a place to land.
+  if (!slides.length) {
+    return <div className={`${className} xc-carousel-empty`} aria-hidden="true" />;
+  }
+
   return (
     <Carousel className={className}>
       {slides.map((src, index) => (

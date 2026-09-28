@@ -31,7 +31,11 @@ export default function Sales() {
             data-aos="fade-up"
           >
             <div className="flex items-center justify-center">
-              <img src={image} className="h-64 w-full rounded-lg object-contain" alt="" />
+              {image ? (
+                <img src={image} className="h-64 w-full rounded-lg object-contain" alt="" />
+              ) : (
+                <div className="h-64 w-full rounded-lg" aria-hidden="true" />
+              )}
             </div>
             <div>
               <RichContent html={sections[id]?.html} className="text-justify text-gray-600" />
